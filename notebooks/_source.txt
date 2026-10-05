@@ -1,6 +1,8 @@
 @@MD
 # Gemma 3 270M으로 Jev 스타일 판단기 만들기
 
+<img src="https://raw.githubusercontent.com/deep-diver/jev-270m/main/docs/overview.webp" alt="overview">
+
 Jev는 글을 쓰지 않는 의사결정 모델입니다. 상태를 넣으면 미리 선언해 둔 필드를 확률과 함께
 돌려줍니다. 생성이 없으니 파싱 에러도, 없는 필드를 지어내는 환각도 구조적으로 불가능합니다.
 

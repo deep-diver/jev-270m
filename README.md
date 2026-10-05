@@ -3,6 +3,8 @@
 > A System One decision interface on Google Gemma 3 270M.
 > Inspired by [TypeSafe AI's Jev](https://typesafe.ai).
 
+![Stock Gemma 3 270M to a typed decision interface](docs/overview.webp)
+
 Jev does not write text. You give it a state, declare the fields you want, and it
 returns those fields with a probability attached. No generation means no parse
 error and no invented field.

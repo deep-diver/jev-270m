@@ -1,6 +1,8 @@
 @@MD
 # A Jev-style decision model on Gemma 3 270M
 
+<img src="https://raw.githubusercontent.com/deep-diver/jev-270m/main/docs/overview.webp" alt="overview">
+
 Jev does not write text. You give it a state, declare the fields you want, and
 it returns those fields with a probability attached. There is no generation, so
 there is no parse error and no invented field.
