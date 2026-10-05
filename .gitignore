@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.DS_Store
+.venv/
+env/
+venv/
+*.log
+pytorch_reference/
+mini_jev/
+.jax_cache/
+
+# Regenerable or large artefacts
+data/pointer/
+data/surfmate/
+data/video/
+data/screenshots/
+data/shots/
+data/audio/
+data/decision/*.jsonl
+data/decision/lora_head.npz
+data/decision/lora_tpu.npz
+notebooks/*_output.ipynb
