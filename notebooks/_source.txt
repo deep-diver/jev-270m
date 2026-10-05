@@ -1,3 +1,19 @@
+@@CODE
+# @title Licensed under the Apache License, Version 2.0 (the "License")
+# Copyright 2026 Chansung Park
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 @@MD
 # Gemma 3 270M으로 Jev 스타일 판단기 만들기
 
@@ -875,6 +891,14 @@ in-domain은 오르는데 전이는 떨어집니다. 그래서 **모델 선택�
 3. 선형 프로브 대신 작은 MLP를 올리면 LOCO AUC가 오를까요? (힌트: 기준이 held-out이라는 점)
 4. 6절의 규칙을 깨 보세요 — 음성을 보일러플레이트로만 바꾸고 재학습하면 숫자가 어떻게 될까요?
 5. 옵션 순서를 뒤집어 두 결과를 평균내는 `permutations=2`를 구현하고 ECE를 재보세요.
+
+### 라이선스
+
+[Apache License 2.0](https://github.com/deep-diver/jev-270m/blob/main/LICENSE)을 따릅니다. Copyright 2026 Chansung Park.
+
+Gemma 3 270M 자체는 이 라이선스의 대상이 아닙니다. 가중치와 그로부터 파생된 것들
+— 이 저장소의 어댑터를 포함해 — 은 [Gemma 이용약관](https://ai.google.dev/gemma/terms)을
+따릅니다.
 
 ### 코드
 

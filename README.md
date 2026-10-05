@@ -150,3 +150,11 @@ Editing a notebook means editing its `_source` file and running
 `transformers`, `torch` and `numpy` for the notebook; `jax`, `optax` and
 `safetensors` for training. Gemma 3 270M is gated — accept the licence on the
 [model page](https://huggingface.co/google/gemma-3-270m-it) first.
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE). Copyright 2026 Chansung Park.
+
+Gemma 3 270M itself is not covered by that licence. The weights, and anything
+derived from them — including `data/decision/lora_best.npz` in this repository —
+are governed by the [Gemma Terms of Use](https://ai.google.dev/gemma/terms).
