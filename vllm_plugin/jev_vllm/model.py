@@ -109,11 +109,31 @@ def build_classes(model_dir: str):
             if toks is None:
                 toks = pooling_metadata.prompt_token_ids
 
+            # With chunked prefill the engine can hand over part of a sequence,
+            # so the rows do not always add up to what hidden_states holds.
+            # Trust the cursor when it is there and fall back to the prompt
+            # lengths when it is not.
+            cursor = getattr(pooling_metadata, "pooling_cursor", None)
+            chunks = None
+            if cursor is not None:
+                n_sched = getattr(cursor, "num_scheduled_tokens_cpu", None)
+                if n_sched is not None:
+                    chunks = n_sched.tolist()
+            if chunks is None or sum(chunks) != hidden_states.shape[0]:
+                chunks = lens
+
             out, start = [], 0
             for row, n in enumerate(lens):
-                h = hidden_states[start:start + n]
-                ids = toks[row][:n].tolist()
-                start += n
+                take = chunks[row] if row < len(chunks) else n
+                h = hidden_states[start:start + take]
+                ids = toks[row][:take].tolist()
+                start += take
+                if h.shape[0] < n:
+                    # Only a prefix of this sequence arrived; the decision
+                    # token is not in it yet.
+                    out.append(torch.zeros(0, device=hidden_states.device))
+                    continue
+                n = h.shape[0]
 
                 marks = {}
                 for opt, (a, b, c) in triples.items():
@@ -128,7 +148,7 @@ def build_classes(model_dir: str):
                     continue
 
                 order = sorted(marks)
-                q = self._norm(h[n - 1].float()) @ self.Wq.T
+                q = self._norm(h[-1].float()) @ self.Wq.T
                 k = self._norm(h[[marks[i] for i in order]].float()) @ self.Wk.T
                 out.append((k @ q) / (self.dim ** 0.5))
             return out

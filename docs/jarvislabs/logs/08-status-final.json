@@ -1,0 +1,27 @@
+{
+  "user": {
+    "user_id": "chansung18@gmail.com",
+    "name": "chansung park",
+    "address1": "218, Gajeong-ro, Yuseong-gu",
+    "address2": null,
+    "city": "Daejeon",
+    "country": "KR",
+    "phone_number": null,
+    "state": "30",
+    "zip_code": "34129",
+    "tax_id": null
+  },
+  "balance": {
+    "balance": 7983.92,
+    "grants": 0.0
+  },
+  "resources": {
+    "running_instances": 1,
+    "paused_instances": 0,
+    "running_vms": 0,
+    "paused_vms": 0,
+    "deployments": 0,
+    "filesystems": 0
+  },
+  "currency": "USD"
+}
