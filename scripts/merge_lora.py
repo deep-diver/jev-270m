@@ -35,9 +35,9 @@ import os
 import shutil
 import sys
 
+import jax.numpy as jnp
 import numpy as np
-import torch
-from safetensors.torch import load_file, save_file
+import safetensors.flax as sf
 
 NUM_LAYERS = 18
 PROJ = {"q": "q_proj", "k": "k_proj", "v": "v_proj", "o": "o_proj"}
@@ -56,10 +56,10 @@ def main():
     print(f"adapter: rank {rank}, alpha {float(ck['alpha'])}, scale {scale:.3f}, "
           f"head dim {dim}, dev acc {float(ck['dev_acc']):.3f}")
 
-    # torch rather than numpy: the base ships in bfloat16, which numpy has no
-    # dtype for. Each matrix is merged in float32 and written back as it came.
+    # safetensors.flax, not numpy: the base ships in bfloat16, which numpy has
+    # no dtype for. Each matrix is merged in float32 and written back as it came.
     src = os.path.join(args.base, "model.safetensors")
-    weights = load_file(src)
+    weights = sf.load_file(src)
     print(f"base: {len(weights)} tensors from {src}, "
           f"dtype {weights['model.embed_tokens.weight'].dtype}")
 
@@ -70,12 +70,13 @@ def main():
         for i in range(NUM_LAYERS):
             key = f"model.layers.{i}.self_attn.{name}.weight"
             orig = weights[key]
-            W = orig.to(torch.float32)
-            delta = torch.from_numpy(
+            W = orig.astype(jnp.float32)
+            delta = jnp.asarray(
                 scale * (B[i].astype(np.float32) @ A[i].astype(np.float32)))
-            assert delta.shape == W.shape, (key, tuple(delta.shape), tuple(W.shape))
-            biggest = max(biggest, float(delta.abs().max() / (W.abs().max() + 1e-9)))
-            weights[key] = (W + delta).to(orig.dtype)
+            assert delta.shape == W.shape, (key, delta.shape, W.shape)
+            biggest = max(biggest, float(jnp.abs(delta).max()
+                                         / (jnp.abs(W).max() + 1e-9)))
+            weights[key] = (W + delta).astype(orig.dtype)
             merged += 1
     print(f"merged {merged} matrices; largest delta is {biggest:.1%} of its matrix")
 
@@ -83,17 +84,15 @@ def main():
     for f in os.listdir(args.base):
         if f != "model.safetensors":
             shutil.copy2(os.path.join(args.base, f), os.path.join(args.out, f))
-    save_file(weights, os.path.join(args.out, "model.safetensors"),
-              metadata={"format": "pt"})
+    sf.save_file(weights, os.path.join(args.out, "model.safetensors"))
 
     # Kept out of the top level: loaders that glob every *.safetensors beside
     # the config would try to push these into the backbone.
     extras = os.path.join(args.out, "extras")
     os.makedirs(extras, exist_ok=True)
-    head = {k[5:]: torch.from_numpy(np.asarray(ck[k], dtype=np.float32))
+    head = {k[5:]: jnp.asarray(np.asarray(ck[k], dtype=np.float32))
             for k in ck.files if k.startswith("head.")}
-    save_file(head, os.path.join(extras, "pointer_head.safetensors"),
-              metadata={"format": "pt"})
+    sf.save_file(head, os.path.join(extras, "pointer_head.safetensors"))
     json.dump({"dim": dim, "hidden": int(head["Wq"].shape[1]),
                "keys": sorted(head)},
               open(os.path.join(extras, "pointer_head.json"), "w"), indent=1)

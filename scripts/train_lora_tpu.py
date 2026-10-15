@@ -113,24 +113,22 @@ def token_at(offsets, char, n):
 # --------------------------------------------------------------------------
 
 def load_weights(model_id, jnp):
-    """Prefer the safetensors file: a TPU VM then needs no torch at all."""
+    """Read the checkpoint straight into JAX arrays.
+
+    `safetensors.flax` handles the bfloat16 the base ships in, which numpy has
+    no dtype for, so nothing here needs torch.
+    """
     import os
+    import safetensors.flax as sf
+
     if os.path.isdir(model_id):
-        p = os.path.join(model_id, "model.safetensors")
+        path = os.path.join(model_id, "model.safetensors")
     else:
         from huggingface_hub import try_to_load_from_cache
-        p = try_to_load_from_cache(model_id, "model.safetensors")
-    if isinstance(p, str) and os.path.exists(p):
-        from safetensors import safe_open
-        out = {}
-        with safe_open(p, framework="np") as f:
-            for k in f.keys():
-                out[k] = jnp.asarray(f.get_tensor(k), dtype=jnp.float32)
-        return out
-    import torch
-    from transformers import AutoModelForCausalLM
-    m = AutoModelForCausalLM.from_pretrained(model_id, dtype=torch.float32)
-    return {k: jnp.asarray(v.detach().numpy()) for k, v in m.state_dict().items()}
+        path = try_to_load_from_cache(model_id, "model.safetensors")
+    if not (isinstance(path, str) and os.path.exists(path)):
+        raise FileNotFoundError(f"no model.safetensors for {model_id!r}")
+    return {k: v.astype(jnp.float32) for k, v in sf.load_file(path).items()}
 
 
 def stack_layers(weights, jnp):
