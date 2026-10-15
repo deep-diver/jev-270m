@@ -17,8 +17,8 @@ Fold the adapter into the base weights and write a plain checkpoint.
 
 The training run keeps the backbone frozen and carries the adaptation in
 `lora.npz` as stacked arrays, which nothing but our own JAX code can read.
-Serving somewhere else -- vLLM, for instance -- needs a checkpoint that looks
-like any other Gemma 3, so the adapter is folded in:
+Anything that loads a checkpoint the ordinary way needs it to look like any
+other Gemma 3, so the adapter is folded in:
 
     W_eff = W + (alpha / rank) * B @ A
 
@@ -86,8 +86,8 @@ def main():
     save_file(weights, os.path.join(args.out, "model.safetensors"),
               metadata={"format": "pt"})
 
-    # Not at the top level: vLLM's loader globs every *.safetensors beside the
-    # config and would try to push these into the backbone.
+    # Kept out of the top level: loaders that glob every *.safetensors beside
+    # the config would try to push these into the backbone.
     extras = os.path.join(args.out, "extras")
     os.makedirs(extras, exist_ok=True)
     head = {k[5:]: torch.from_numpy(np.asarray(ck[k], dtype=np.float32))
