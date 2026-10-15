@@ -1,0 +1,13 @@
+{
+  "run_id": "r_6e41e0e5",
+  "machine_id": 537525,
+  "target_kind": "directory",
+  "started_at": "2026-10-15T05:00:11.211921+00:00",
+  "state": "succeeded",
+  "instance_status": "Running",
+  "exit_code": 0,
+  "remote_log": "/home/jl-runs/r_6e41e0e5/output.log",
+  "lifecycle_policy": "none",
+  "instance_cost": 0.166,
+  "launch_command": "command -v uv >/dev/null 2>&1 || { curl -LsSf https://astral.sh/uv/install.sh | sh >/dev/null 2>&1; } && export PATH=\"$HOME/.local/bin:$PATH\" && (test -d .venv || uv venv --system-site-packages --seed .venv) && . .venv/bin/activate && echo '[jl] Installing from' requirements.txt && uv pip install -r requirements.txt && python3 scripts/build_decision_data.py"
+}

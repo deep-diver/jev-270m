@@ -1,0 +1,15 @@
+[project]
+name = "jev-vllm"
+version = "0.1.0"
+description = "Typed-decision pooling model for vLLM"
+requires-python = ">=3.9"
+
+# vLLM imports every entry point in this group in each of its processes,
+# including the engine core subprocess. Registering from __main__ only
+# reaches the parent, which is why a plugin is needed rather than a call.
+[project.entry-points."vllm.general_plugins"]
+jev_decision = "jev_vllm:register"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"

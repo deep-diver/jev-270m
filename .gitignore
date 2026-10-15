@@ -21,3 +21,4 @@ data/decision/*.jsonl
 data/decision/lora_head.npz
 data/decision/lora_tpu.npz
 notebooks/*_output.ipynb
+data/decision/lora_l4.npz
